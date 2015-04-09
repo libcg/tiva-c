@@ -240,6 +240,8 @@ gameRun(void)
 static long
 touchscreenCallback(unsigned long ulMessage, long lX, long lY)
 {
+    WidgetPointerMessage(ulMessage, lX, lY);
+
     // Register a touch event
     ts.touch = (ulMessage == WIDGET_MSG_PTR_MOVE || ulMessage == WIDGET_MSG_PTR_DOWN);
     ts.x = lX;
@@ -277,6 +279,9 @@ main(void)
     // Initialize the touch screen driver.
     TouchScreenInit(ui32SysClock);
     TouchScreenCallbackSet(touchscreenCallback);
+
+    menuInit();
+    menuRun();
 
     return gameRun();
 }

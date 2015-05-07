@@ -81,6 +81,11 @@ ${COMPILER}/upmc_raycast.axf: ${COMPILER}/sound.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/startup_${COMPILER}.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/touch.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/ustdlib.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/ChrFont0.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/delay.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOled.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOledChar.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOledGraph.o
 ${COMPILER}/upmc_raycast.axf: ${ROOT}/grlib/${COMPILER}/libgr.a
 ${COMPILER}/upmc_raycast.axf: ${ROOT}/driverlib/${COMPILER}/libdriver.a
 ${COMPILER}/upmc_raycast.axf: upmc_raycast.ld

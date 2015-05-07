@@ -73,6 +73,7 @@ ${COMPILER}:
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/frame.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/upmc_raycast.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/menu.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/audio.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/kentec320x240x16_ssd2119.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/pinout.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/sine.o

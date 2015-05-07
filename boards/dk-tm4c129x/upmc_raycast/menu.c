@@ -9,6 +9,7 @@
 #include "grlib/slider.h"
 #include "utils/ustdlib.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
+#include "intro_snd.h"
 
 void OnMenuPlayPress(tWidget *psWidget);
 void OnMenuOptionsPress(tWidget *psWidget);
@@ -357,7 +358,10 @@ void
 menuRun()
 {
     exit = 0;
+    audio_play(&intro_snd);
 
-    while (!exit)
+    while (!exit) {
         WidgetMessageQueueProcess();
+        audio_process();
+    }
 }

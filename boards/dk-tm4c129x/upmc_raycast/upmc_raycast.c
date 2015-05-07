@@ -11,6 +11,7 @@
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "drivers/pinout.h"
 #include "drivers/touch.h"
+#include "audio.h"
 
 #define SCREEN_WIDTH    (320)
 #define SCREEN_HEIGHT   (240)
@@ -230,6 +231,7 @@ gameRun(void)
     // Game loop
     while (1)
     {
+        audio_process();
         gameLogic(&game);
         gameRender(&game);
     }
@@ -279,6 +281,9 @@ main(void)
     // Initialize the touch screen driver.
     TouchScreenInit(ui32SysClock);
     TouchScreenCallbackSet(touchscreenCallback);
+
+    // Initialize audio
+    audio_init(ui32SysClock);
 
     menuInit();
     menuRun();

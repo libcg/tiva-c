@@ -17,6 +17,7 @@
 #define SCREEN_HEIGHT   (240)
 #define PI              (3.14159f)
 #define FIELD_OF_VIEW   (70.f * PI / 180.f)
+#define COLLIDE_GAP     (0.2f)
 
 typedef struct
 {
@@ -63,6 +64,24 @@ gameLocate(Game *game, int x, int y)
     }
 
     return game->map.tile[y][x];
+}
+
+static void
+gameCollision(Game *game)
+{
+    float px = game->player.x;
+    float py = game->player.y;
+    int fpx = floorf(px);
+    int fpy = floorf(py);
+
+    if      (gameLocate(game, floorf(px + COLLIDE_GAP), fpy))
+        game->player.x = fpx - COLLIDE_GAP + 1;
+    else if (gameLocate(game, floorf(px - COLLIDE_GAP), fpy))
+        game->player.x = fpx + COLLIDE_GAP;
+    if      (gameLocate(game, fpx, floorf(py + COLLIDE_GAP)))
+        game->player.y = fpy - COLLIDE_GAP + 1;
+    else if (gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))
+        game->player.y = fpy + COLLIDE_GAP;
 }
 
 static float
@@ -143,6 +162,8 @@ gameLogic(Game *game)
             game->player.x += 0.13f * cosf(game->player.dir);
             game->player.y += 0.13f * sinf(game->player.dir);
         }
+
+        gameCollision(game);
     }
 }
 

@@ -266,68 +266,6 @@ OnMenuPaint(tWidget *psWidget, tContext *psContext)
 void
 OnOptionsPaint(tWidget *psWidget, tContext *psContext)
 {
-    uint32_t ui32Idx;
-    tRectangle sRect;
-
-    //
-    // Draw a vertical sweep of lines from red to green.
-    //
-    for(ui32Idx = 0; ui32Idx <= 8; ui32Idx++)
-    {
-        GrContextForegroundSet(psContext,
-                               (((((10 - ui32Idx) * 255) / 10) << ClrRedShift) |
-                                (((ui32Idx * 255) / 10) << ClrGreenShift)));
-        GrLineDraw(psContext, 115, 120, 5, 120 - (11 * ui32Idx));
-    }
-
-    //
-    // Draw a horizontal sweep of lines from green to blue.
-    //
-    for(ui32Idx = 1; ui32Idx <= 10; ui32Idx++)
-    {
-        GrContextForegroundSet(psContext,
-                               (((((10 - ui32Idx) * 255) / 10) <<
-                                 ClrGreenShift) |
-                                (((ui32Idx * 255) / 10) << ClrBlueShift)));
-        GrLineDraw(psContext, 115, 120, 5 + (ui32Idx * 11), 29);
-    }
-
-    //
-    // Draw a filled circle with an overlapping circle.
-    //
-    GrContextForegroundSet(psContext, ClrBrown);
-    GrCircleFill(psContext, 185, 69, 40);
-    GrContextForegroundSet(psContext, ClrSkyBlue);
-    GrCircleDraw(psContext, 205, 99, 30);
-
-    //
-    // Draw a filled rectangle with an overlapping rectangle.
-    //
-    GrContextForegroundSet(psContext, ClrSlateGray);
-    sRect.i16XMin = 20;
-    sRect.i16YMin = 100;
-    sRect.i16XMax = 75;
-    sRect.i16YMax = 160;
-    GrRectFill(psContext, &sRect);
-    GrContextForegroundSet(psContext, ClrSlateBlue);
-    sRect.i16XMin += 40;
-    sRect.i16YMin += 30;
-    sRect.i16XMax += 30;
-    sRect.i16YMax += 18;
-    GrRectDraw(psContext, &sRect);
-
-    //
-    // Draw a piece of text in fonts of increasing size.
-    //
-    GrContextForegroundSet(psContext, ClrSilver);
-    GrContextFontSet(psContext, g_psFontCm14);
-    GrStringDraw(psContext, "Strings", -1, 120, 104, 0);
-    GrContextFontSet(psContext, g_psFontCm18);
-    GrStringDraw(psContext, "Strings", -1, 140, 118, 0);
-    GrContextFontSet(psContext, g_psFontCm22);
-    GrStringDraw(psContext, "Strings", -1, 160, 136, 0);
-    GrContextFontSet(psContext, g_psFontCm24);
-    GrStringDraw(psContext, "Strings", -1, 180, 158, 0);
 }
 
 void

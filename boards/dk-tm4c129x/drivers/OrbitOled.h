@@ -21,9 +21,34 @@
 #if !defined(ORBITOLED_INC)
 #define	ORBITOLED_INC
 
+#include "driverlib/pin_map.h"
+
 /* ------------------------------------------------------------ */
 /*					Miscellaneous Declarations					*/
 /* ------------------------------------------------------------ */
+
+/*
+ * OLED Control
+ */
+#define SCK_OLEDPort	GPIO_PORTE_BASE
+#define SDI_OLEDPort	GPIO_PORTK_BASE
+#define VBAT_OLEDPort	GPIO_PORTK_BASE
+#define VDD_OLEDPort	GPIO_PORTK_BASE
+#define nCS_OLEDPort	GPIO_PORTE_BASE
+#define nRES_OLEDPort	GPIO_PORTF_BASE
+#define nDC_OLEDPort	GPIO_PORTD_BASE
+#define SCK_OLED_PIN	GPIO_PIN_3
+#define SDI_OLED_PIN	GPIO_PIN_1
+#define SCK_OLED		GPIO_PE3_SSI3CLK	// GPIO_PD0_SSI3CLK <- hard coded, should be in pin_map.h
+#define SDI_OLED		GPIO_PK1_SSI3TX	// GPIO_PD3_SSI3TX  <- hard coded, should be in pin_map.h
+#define VBAT_OLED		GPIO_PIN_2
+#define VDD_OLED		GPIO_PIN_3
+#define nCS_OLED		GPIO_PIN_6
+#define nRES_OLED		GPIO_PIN_3
+#define nDC_OLED		GPIO_PIN_2
+
+#define LOW				0
+#define HIGH			1
 
 #define	cbOledDispMax	512		//max number of bytes in display buffer
 

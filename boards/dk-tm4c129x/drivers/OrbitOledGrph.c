@@ -23,11 +23,8 @@
 /*				Include File Definitions						*/
 /* ------------------------------------------------------------ */
 
-#include "LaunchPad.h"
-#include "OrbitBoosterPackDefs.h"
-
 #include "OrbitOled.h"
-#include "FillPat.h"
+#include <math.h>
 
 /* ------------------------------------------------------------ */
 /*				Local Type Definitions							*/
@@ -42,7 +39,6 @@ extern int		xcoOledCur;
 extern int		ycoOledCur;
 extern char *	pbOledCur;
 extern char		rgbOledBmp[];
-extern char		rgbFillPat[];
 extern int		bnOledCur;
 extern char		clrOledCur;
 extern char *	pbOledPatCur;
@@ -55,6 +51,16 @@ extern int		dycoOledFontCur;
 /*				Local Variables									*/
 /* ------------------------------------------------------------ */
 
+char rgbFillPat[] = {
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 0x00
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,	// 0x01
+	0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, // 0x02
+	0x11, 0x44, 0x00, 0x11, 0x44, 0x00, 0x11, 0x44,	// 0x03
+	0x92, 0x45, 0x24, 0x92, 0x45, 0x24, 0x92, 0x45,	// 0x04
+	0x49, 0x92, 0x24, 0x49, 0x92, 0x24, 0x49, 0x92, // 0x05
+	0x22, 0x11, 0x22, 0x00, 0x22, 0x11, 0x22, 0x00,	// 0x06
+	0x11, 0x22, 0x11, 0x00, 0x11, 0x22, 0x11, 0x00	// 0x07
+};
 char	(*pfnDoRop)(char bPix, char bDsp, char mskPix);
 int		modOledCur;
 
@@ -372,11 +378,11 @@ OrbitOledLineTo(int xco, int yco)
 	*/
 	dxco = xco - xcoOledCur;
 	dyco = yco - ycoOledCur;
-	if (abs(dxco) >= abs(dyco)) {
+	if (fabs(dxco) >= fabs(dyco)) {
 		/* Line is x-major
 		*/
-		lim = abs(dxco);
-		del = abs(dyco);
+		lim = fabs(dxco);
+		del = fabs(dyco);
 		if (dxco >= 0) {
 			pfnMajor = OrbitOledMoveRight;
 		}
@@ -394,8 +400,8 @@ OrbitOledLineTo(int xco, int yco)
 	else {
 		/* Line is y-major
 		*/
-		lim = abs(dyco);
-		del = abs(dxco);
+		lim = fabs(dyco);
+		del = fabs(dxco);
 		if (dyco >= 0) {
 			pfnMajor = OrbitOledMoveDown;
 		}
@@ -661,6 +667,7 @@ OrbitOledGetBmp(int dxco, int dyco, char * pbBits)
 			while (xcoCur < xcoRight) {
 				bTmp = *pbDspCur;
 				bTmp = *(pbDspCur+ccolOledMax);
+				(void)bTmp;
 				*pbBmpCur = ((*pbDspCur >> bnAlign) |
 							((*(pbDspCur+ccolOledMax)) << (8-bnAlign))) & mskEnd;
 				xcoCur += 1;
@@ -830,6 +837,7 @@ OrbitOledDrawChar(char ch)
 	}
 
 	pbBmp = pbOledCur;
+	(void)pbBmp;
 
 	OrbitOledPutBmp(dxcoOledFontCur, dycoOledFontCur, pbFont);
 

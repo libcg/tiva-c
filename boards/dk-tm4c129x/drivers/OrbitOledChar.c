@@ -23,9 +23,6 @@
 /*				Include File Definitions						*/
 /* ------------------------------------------------------------ */
 
-#include "LaunchPad.h"
-#include "OrbitBoosterPackDefs.h"
-
 #include "OrbitOled.h"
 #include "OrbitOledChar.h"
 #include "OrbitOledGrph.h"

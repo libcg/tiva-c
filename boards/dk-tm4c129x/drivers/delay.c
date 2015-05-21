@@ -23,8 +23,13 @@
 /*				Include File Definitions						*/
 /* ------------------------------------------------------------ */
 
-#include "LaunchPad.h"
-#include "OrbitBoosterPackDefs.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_timer.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
 
 #include "delay.h"
 

@@ -23,8 +23,14 @@
 /*				Include File Definitions						*/
 /* ------------------------------------------------------------ */
 
-#include "LaunchPad.h"
-#include "OrbitBoosterPackDefs.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "inc/hw_gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+#include "driverlib/ssi.h"
 
 #include "OrbitOled.h"
 #include "OrbitOledChar.h"
@@ -157,10 +163,10 @@ OrbitOledHostInit()
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI3);
 	GPIOPinTypeSSI(SCK_OLEDPort, SCK_OLED_PIN);
 	GPIOPinTypeSSI(SDI_OLEDPort, SDI_OLED_PIN);
-	GPIOPinConfigure(SDI_OLED);
-	GPIOPinConfigure(SCK_OLED);
+	//GPIOPinConfigure(SDI_OLED);
+	//GPIOPinConfigure(SCK_OLED);
 	SSIClockSourceSet(SSI3_BASE, SSI_CLOCK_SYSTEM);
-	SSIConfigSetExpClk(SSI3_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, 8000000, 8);
+	//SSIConfigSetExpClk(SSI3_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, 8000000, 8);
 	SSIEnable(SSI3_BASE);
 
 	/* Make power control pins be outputs with the supplies off
@@ -177,9 +183,9 @@ OrbitOledHostInit()
 	 * 2. Write to appropriate bit in the Commit Register (bit 7)
 	 * 3. Re-lock the GPIOLOCK register
 	*/
-	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0x4C4F434B;	// unlock
-	HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= 1 << 7; 		// allow writes
-	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0x0;			// re-lock
+	//HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0x4C4F434B;	// unlock
+	//HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= 1 << 7; 		// allow writes
+	//HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0x0;			// re-lock
 	GPIOPinWrite(nDC_OLEDPort, nDC_OLED, nDC_OLED);
 	GPIOPinTypeGPIOOutput(nDC_OLEDPort, nDC_OLED);
 	GPIOPinWrite(nDC_OLEDPort, nDC_OLED, nDC_OLED);

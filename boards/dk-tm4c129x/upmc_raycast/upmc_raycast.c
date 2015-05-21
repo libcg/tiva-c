@@ -84,6 +84,8 @@ gameCollision(Game *game)
         game->player.y = fpy - COLLIDE_GAP + 1;
     else if (gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))
         game->player.y = fpy + COLLIDE_GAP;
+    if      (gameLocate(game, floorf(game->player.x), floorf(game->player.y)))
+        game->player.x = px, game->player.y = py;
 }
 
 static float

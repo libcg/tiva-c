@@ -16,7 +16,7 @@ typedef struct
 void audio_init(uint32_t sysclk);
 void audio_process(void);
 
-void audio_play(Sound *sound);
+void audio_play(Sound *sound, bool loop);
 void audio_stop(void);
 void audio_resume(void);
 void audio_pause(void);

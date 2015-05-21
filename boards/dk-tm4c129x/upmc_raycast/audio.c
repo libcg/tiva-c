@@ -83,12 +83,13 @@ void audio_process(void)
     }
 }
 
-void audio_play(Sound *sound)
+void audio_play(Sound *sound, bool loop)
 {
     if (!sound)
         return;
 
     ctx.snd = sound;
+    ctx.loop = loop;
     audio_resume();
 }
 

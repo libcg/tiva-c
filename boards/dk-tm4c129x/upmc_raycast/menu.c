@@ -296,7 +296,7 @@ void
 menuRun()
 {
     exit = 0;
-    audio_play(&intro_snd);
+    audio_play(&intro_snd, false);
 
     while (!exit) {
         WidgetMessageQueueProcess();

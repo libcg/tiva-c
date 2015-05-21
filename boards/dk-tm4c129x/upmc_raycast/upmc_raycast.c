@@ -11,6 +11,7 @@
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "drivers/pinout.h"
 #include "drivers/touch.h"
+#include "drivers/orbitled.h"
 #include "audio.h"
 
 #define SCREEN_WIDTH    (320)
@@ -305,6 +306,9 @@ main(void)
 
     // Initialize audio
     audio_init(ui32SysClock);
+
+    // Initialize LEDs
+    orbitled_init();
 
     menuInit();
     menuRun();

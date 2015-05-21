@@ -86,6 +86,7 @@ ${COMPILER}/upmc_raycast.axf: ${COMPILER}/delay.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOled.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOledChar.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/OrbitOledGrph.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/orbitled.o
 ${COMPILER}/upmc_raycast.axf: ${ROOT}/grlib/${COMPILER}/libgr.a
 ${COMPILER}/upmc_raycast.axf: ${ROOT}/driverlib/${COMPILER}/libdriver.a
 ${COMPILER}/upmc_raycast.axf: upmc_raycast.ld

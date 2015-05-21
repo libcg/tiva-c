@@ -11,12 +11,12 @@
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "intro_snd.h"
 
-void OnMenuPlayPress(tWidget *psWidget);
-void OnMenuOptionsPress(tWidget *psWidget);
-void OnPrevious(tWidget *psWidget);
-void OnNext(tWidget *psWidget);
-void OnMenuPaint(tWidget *psWidget, tContext *psContext);
-void OnOptionsPaint(tWidget *psWidget, tContext *psContext);
+static void OnMenuPlayPress(tWidget *psWidget);
+static void OnMenuOptionsPress(tWidget *psWidget);
+static void OnPrevious(tWidget *psWidget);
+static void OnNext(tWidget *psWidget);
+static void OnMenuPaint(tWidget *psWidget, tContext *psContext);
+static void OnOptionsPaint(tWidget *psWidget, tContext *psContext);
 extern tCanvasWidget g_panels[];
 
 Canvas(g_menu, g_panels, 0, 0, &g_sKentec320x240x16_SSD2119,
@@ -60,7 +60,7 @@ tCanvasWidget g_panels[] =
 // screen.
 //
 //*****************************************************************************
-char *g_pcPanelNames[] =
+static char *g_pcPanelNames[] =
 {
     "     Menu     ",
     "     Options     ",
@@ -91,16 +91,16 @@ RectangularButton(g_sNext, 0, 0, 0, &g_sKentec320x240x16_SSD2119,
 // The panel that is currently being displayed.
 //
 //*****************************************************************************
-uint32_t g_ui32Panel;
+static uint32_t g_ui32Panel;
 static bool exit;
 
-void
+static void
 OnMenuPlayPress(tWidget *psWidget)
 {
     exit = 1;
 }
 
-void
+static void
 OnMenuOptionsPress(tWidget *psWidget)
 {
     OnNext(psWidget);
@@ -111,7 +111,7 @@ OnMenuOptionsPress(tWidget *psWidget)
 // Handles presses of the previous panel button.
 //
 //*****************************************************************************
-void
+static void
 OnPrevious(tWidget *psWidget)
 {
     //
@@ -180,7 +180,7 @@ OnPrevious(tWidget *psWidget)
 // Handles presses of the next panel button.
 //
 //*****************************************************************************
-void
+static void
 OnNext(tWidget *psWidget)
 {
     //
@@ -249,7 +249,7 @@ OnNext(tWidget *psWidget)
 // Handles paint requests for the introduction canvas widget.
 //
 //*****************************************************************************
-void
+static void
 OnMenuPaint(tWidget *psWidget, tContext *psContext)
 {
     GrContextFontSet(psContext, g_psFontCm20);
@@ -263,7 +263,7 @@ OnMenuPaint(tWidget *psWidget, tContext *psContext)
 // Handles paint requests for the primitives canvas widget.
 //
 //*****************************************************************************
-void
+static void
 OnOptionsPaint(tWidget *psWidget, tContext *psContext)
 {
 }

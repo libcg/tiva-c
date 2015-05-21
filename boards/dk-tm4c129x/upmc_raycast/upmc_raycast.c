@@ -12,6 +12,7 @@
 #include "drivers/pinout.h"
 #include "drivers/touch.h"
 #include "drivers/orbitled.h"
+#include "menu.h"
 #include "audio.h"
 
 #define SCREEN_WIDTH    (320)

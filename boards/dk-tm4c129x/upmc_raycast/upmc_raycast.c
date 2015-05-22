@@ -87,7 +87,7 @@ gameLocate(Game *game, int x, int y)
 }
 
 static void
-gameCollision(Game *game)
+gameCollision(Game *game, float opx, float opy)
 {
     float px = game->player.x;
     float py = game->player.y;
@@ -102,8 +102,9 @@ gameCollision(Game *game)
         game->player.y = fpy - COLLIDE_GAP + 1;
     else if (gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))
         game->player.y = fpy + COLLIDE_GAP;
+
     if      (gameLocate(game, floorf(game->player.x), floorf(game->player.y)))
-        game->player.x = px, game->player.y = py;
+        game->player.x = opx, game->player.y = opy;
 }
 
 static float
@@ -174,6 +175,9 @@ static void
 gameLogic(Game *game)
 {
     if (g_ts.touch) {
+        float opx = game->player.x;
+        float opy = game->player.y;
+
         if (g_ts.x > 2 * SCREEN_WIDTH / 3) {
             // Turn right
             game->player.dir += PLAYER_ROT;
@@ -193,7 +197,7 @@ gameLogic(Game *game)
             game->player.y += PLAYER_MOVE * sinf(game->player.dir);
         }
 
-        gameCollision(game);
+        gameCollision(game, opx, opy);
     }
 }
 

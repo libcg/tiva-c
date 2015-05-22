@@ -14,6 +14,7 @@
 #include "drivers/orbitled.h"
 #include "menu.h"
 #include "audio.h"
+#include "hit_snd.h"
 #include "rock_tex.h"
 #include "door_tex.h"
 #include "handle_tex.h"
@@ -89,22 +90,30 @@ gameLocate(Game *game, int x, int y)
 static void
 gameCollision(Game *game, float opx, float opy)
 {
+    static bool collided = false;
+
     float px = game->player.x;
     float py = game->player.y;
     int fpx = floorf(px);
     int fpy = floorf(py);
+    bool colliding = false;
 
     if      (gameLocate(game, floorf(px + COLLIDE_GAP), fpy))
-        game->player.x = fpx - COLLIDE_GAP + 1;
+        colliding = true, game->player.x = fpx - COLLIDE_GAP + 1;
     else if (gameLocate(game, floorf(px - COLLIDE_GAP), fpy))
-        game->player.x = fpx + COLLIDE_GAP;
+        colliding = true, game->player.x = fpx + COLLIDE_GAP;
     if      (gameLocate(game, fpx, floorf(py + COLLIDE_GAP)))
-        game->player.y = fpy - COLLIDE_GAP + 1;
+        colliding = true, game->player.y = fpy - COLLIDE_GAP + 1;
     else if (gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))
-        game->player.y = fpy + COLLIDE_GAP;
+        colliding = true, game->player.y = fpy + COLLIDE_GAP;
 
     if      (gameLocate(game, floorf(game->player.x), floorf(game->player.y)))
-        game->player.x = opx, game->player.y = opy;
+        colliding = true, game->player.x = opx, game->player.y = opy;
+
+    if (colliding && !collided)
+        audio_play(&hit_snd, false);
+
+    collided = colliding;
 }
 
 static float

@@ -1048,6 +1048,44 @@ Kentec320x240x16_SSD2119Init(uint32_t ui32SysClock)
     }
 }
 
+void
+Kentec320x240x16_SSD2119TexDrawV(void *disp, int32_t x, int32_t y1, int32_t y2,
+                                 uint16_t *tex, uint32_t size)
+{
+    int32_t ystart = (y1 >= 0 ? y1 : 0);
+    int32_t yend = (y2 < LCD_VERTICAL_MAX ? y2 : LCD_VERTICAL_MAX);
+    int32_t y;
+
+    if (!tex)
+        return;
+
+    //
+    // Set the cursor increment to top to bottom, followed by left to right.
+    //
+    WriteCommand(SSD2119_ENTRY_MODE_REG);
+    WriteData(MAKE_ENTRY_MODE(VERT_DIRECTION));
+
+    //
+    // Set the X address of the display cursor.
+    //
+    WriteCommand(SSD2119_X_RAM_ADDR_REG);
+    WriteData(MAPPED_X(x, ystart));
+
+    //
+    // Set the starting Y address of the display cursor.
+    //
+    WriteCommand(SSD2119_Y_RAM_ADDR_REG);
+    WriteData(MAPPED_Y(x, ystart));
+
+    //
+    // Write the data RAM write command.
+    //
+    WriteCommand(SSD2119_RAM_DATA_REG);
+
+    for (y = ystart; y < yend; y++)
+        WriteData((uint32_t)tex[(y - y1) * size / (y2 - y1)]);
+}
+
 //*****************************************************************************
 //
 // Close the Doxygen group.

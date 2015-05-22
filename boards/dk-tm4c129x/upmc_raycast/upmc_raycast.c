@@ -14,18 +14,23 @@
 #include "drivers/orbitled.h"
 #include "menu.h"
 #include "audio.h"
+#include "rock_tex.h"
+#include "door_tex.h"
+#include "handle_tex.h"
+#include "wood_tex.h"
 
 #define SCREEN_WIDTH    (320)
 #define SCREEN_HEIGHT   (240)
 #define PI              (3.14159f)
 #define FIELD_OF_VIEW   (70.f * PI / 180.f)
 #define COLLIDE_GAP     (0.2f)
+#define TEX_SIZE        (32)
 
 typedef struct
 {
     bool touch;
-    int x;
-    int y;
+    short x;
+    short y;
 } Touchscreen;
 
 typedef struct
@@ -37,9 +42,9 @@ typedef struct
 
 typedef struct
 {
-    int tile[10][10];
-    int w;
-    int h;
+    uint8_t tile[10][10];
+    uint8_t w;
+    uint8_t h;
 } Map;
 
 typedef struct
@@ -48,11 +53,20 @@ typedef struct
     Map map;
 } Game;
 
-static Touchscreen ts =
+static Touchscreen g_ts =
 {
     .touch = false,
     .x = 0,
     .y = 0
+};
+
+static uint16_t *g_tex[] =
+{
+    NULL,
+    (uint16_t*)&rock_tex_data,
+    (uint16_t*)&door_tex_data,
+    (uint16_t*)&handle_tex_data,
+    (uint16_t*)&wood_tex_data
 };
 
 static int
@@ -89,13 +103,15 @@ gameCollision(Game *game)
 }
 
 static float
-gameRaycast(Game *game, int *type, float angle)
+gameRaycast(Game *game, int *type, float *tx, float angle)
 {
     float x = game->player.x;
     float y = game->player.y;
 
-    if ((*type = gameLocate(game, floorf(x), floorf(y))) != 0)
+    if ((gameLocate(game, floorf(x), floorf(y))) != 0)
     {
+        *type = 0;
+        *tx = 0.f;
         return 0.0001f;
     }
 
@@ -134,12 +150,18 @@ gameRaycast(Game *game, int *type, float angle)
 
     if (dx < dy)
     {
-        *type = 1;
+        *type = gameLocate(game, ix - (incix < 0), floorf(fy));
+        *tx = fy - floorf(fy);
+        if (incix < 0)
+            *tx = 1 - *tx;
         return dx;
     }
     else
     {
-        *type = 2;
+        *type = gameLocate(game, floorf(fx), iy - (inciy < 0));
+        *tx = fx - floorf(fx);
+        if (inciy > 0)
+            *tx = 1 - *tx;
         return dy;
     }
 }
@@ -147,21 +169,21 @@ gameRaycast(Game *game, int *type, float angle)
 static void
 gameLogic(Game *game)
 {
-    if (ts.touch) {
-        if (ts.x > 2 * SCREEN_WIDTH / 3) {
+    if (g_ts.touch) {
+        if (g_ts.x > 2 * SCREEN_WIDTH / 3) {
             // Turn right
             game->player.dir += 0.1f;
         }
-        else if (ts.x < 1 * SCREEN_WIDTH / 3) {
+        else if (g_ts.x < 1 * SCREEN_WIDTH / 3) {
             // Turn left
             game->player.dir -= 0.1f;
         }
-        if (ts.y > 2 * SCREEN_HEIGHT / 3) {
+        if (g_ts.y > 2 * SCREEN_HEIGHT / 3) {
             // Move forward
             game->player.x -= 0.13f * cosf(game->player.dir);
             game->player.y -= 0.13f * sinf(game->player.dir);
         }
-        else if (ts.y < 1 * SCREEN_HEIGHT / 3) {
+        else if (g_ts.y < 1 * SCREEN_HEIGHT / 3) {
             // Move backward
             game->player.x += 0.13f * cosf(game->player.dir);
             game->player.y += 0.13f * sinf(game->player.dir);
@@ -172,30 +194,37 @@ gameLogic(Game *game)
 }
 
 static void
-gameDrawWall(Game *game, int x, int height, int color)
+gameDrawWallSlice(Game *game, int x, int height, int type, float tx)
 {
-    if (height > SCREEN_HEIGHT)
-    {
-        height = SCREEN_HEIGHT;
-    }
+    uint16_t *tex = g_tex[type];
 
     // Top background
-    g_sKentec320x240x16_SSD2119.pfnLineDrawV
-    (
+    g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
         0, (SCREEN_HEIGHT - height) / 2,
         0x0000
     );
+
     // Wall
-    g_sKentec320x240x16_SSD2119.pfnLineDrawV
-    (
-        NULL, x,
-        (SCREEN_HEIGHT - height) / 2, (SCREEN_HEIGHT + height) / 2,
-        color
-    );
+    if (tex) {
+        // Draw a texture slice
+        Kentec320x240x16_SSD2119TexDrawV(
+            NULL, x,
+            (SCREEN_HEIGHT - height) / 2, (SCREEN_HEIGHT + height) / 2,
+            &tex[(int)(tx * TEX_SIZE) * TEX_SIZE], TEX_SIZE
+        );
+    }
+    else {
+        // Draw a solid white slice
+        g_sKentec320x240x16_SSD2119.pfnLineDrawV(
+            NULL, x,
+            (SCREEN_HEIGHT - height) / 2, (SCREEN_HEIGHT + height) / 2,
+            0xFFFF
+        );
+    }
+
     // Bottom background
-    g_sKentec320x240x16_SSD2119.pfnLineDrawV
-    (
+    g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
         (SCREEN_HEIGHT + height) / 2, SCREEN_HEIGHT,
         0x0000
@@ -212,18 +241,13 @@ gameRender(Game *game)
     {
         float dist;
         int type;
-        int color = 0x0000;
+        float tx;
 
-        dist = gameRaycast(game, &type, angle);
+        dist = gameRaycast(game, &type, &tx, angle);
         dist *= cosf(game->player.dir - angle);
         angle += FIELD_OF_VIEW / SCREEN_WIDTH;
 
-        switch (type)
-        {
-            case 1: color = 0xFFFF; break;
-            case 2: color = 0x6232; break;
-        }
-        gameDrawWall(game, i, SCREEN_HEIGHT / dist, color);
+        gameDrawWallSlice(game, i, SCREEN_HEIGHT / dist, type, tx);
     }
 }
 
@@ -238,16 +262,16 @@ gameRun(void)
         .player.dir = 70.f * PI / 180.f,
         .map.tile =
         {
-            {0, 0, 0, 1, 1, 0, 0, 0, 0, 1},
-            {0, 0, 0, 1, 1, 0, 0, 0, 0, 0},
-            {0, 0, 0, 1, 1, 0, 0, 0, 0, 1},
-            {0, 0, 0, 1, 1, 0, 1, 0, 0, 0},
-            {0, 0, 0, 1, 1, 0, 1, 0, 0, 1},
-            {0, 0, 0, 1, 1, 0, 1, 0, 0, 0},
-            {0, 0, 0, 1, 1, 0, 1, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-            {1, 0, 0, 1, 1, 0, 0, 0, 1, 0}
+            {1, 0, 0, 0, 0, 1, 0, 0, 1, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 2},
+            {0, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 1},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
+            {0, 0, 0, 1, 1, 0, 3, 0, 0, 1},
+            {4, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+            {4, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 4, 4, 4, 4, 0, 0, 0, 1, 0}
         },
         .map.w = sizeof(game.map.tile[0]) / sizeof(game.map.tile[0][0]),
         .map.h = sizeof(game.map.tile) / sizeof(game.map.tile[0])
@@ -270,9 +294,9 @@ touchscreenCallback(unsigned long ulMessage, long lX, long lY)
     WidgetPointerMessage(ulMessage, lX, lY);
 
     // Register a touch event
-    ts.touch = (ulMessage == WIDGET_MSG_PTR_MOVE || ulMessage == WIDGET_MSG_PTR_DOWN);
-    ts.x = lX;
-    ts.y = lY;
+    g_ts.touch = (ulMessage == WIDGET_MSG_PTR_MOVE || ulMessage == WIDGET_MSG_PTR_DOWN);
+    g_ts.x = lX;
+    g_ts.y = lY;
     return 0;
 }
 

@@ -45,6 +45,9 @@ extern "C"
 //*****************************************************************************
 extern const tDisplay g_sKentec320x240x16_SSD2119;
 extern void Kentec320x240x16_SSD2119Init(uint32_t ui32SysClock);
+extern void Kentec320x240x16_SSD2119TexDrawV(void *disp, int32_t x,
+                                             int32_t y1, int32_t y2,
+                                             uint16_t *tex, uint32_t size);
 
 //*****************************************************************************
 //

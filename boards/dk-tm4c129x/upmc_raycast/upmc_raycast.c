@@ -25,6 +25,10 @@
 #define FIELD_OF_VIEW   (70.f * PI / 180.f)
 #define COLLIDE_GAP     (0.2f)
 #define TEX_SIZE        (32)
+#define PLAYER_MOVE     (0.13f)
+#define PLAYER_ROT      (0.1f)
+#define CEILING_COLOR   (0x7BEF) // lite gray
+#define FLOOR_COLOR     (0x2965) // dark gray
 
 typedef struct
 {
@@ -172,21 +176,21 @@ gameLogic(Game *game)
     if (g_ts.touch) {
         if (g_ts.x > 2 * SCREEN_WIDTH / 3) {
             // Turn right
-            game->player.dir += 0.1f;
+            game->player.dir += PLAYER_ROT;
         }
         else if (g_ts.x < 1 * SCREEN_WIDTH / 3) {
             // Turn left
-            game->player.dir -= 0.1f;
+            game->player.dir -= PLAYER_ROT;
         }
         if (g_ts.y > 2 * SCREEN_HEIGHT / 3) {
             // Move forward
-            game->player.x -= 0.13f * cosf(game->player.dir);
-            game->player.y -= 0.13f * sinf(game->player.dir);
+            game->player.x -= PLAYER_MOVE * cosf(game->player.dir);
+            game->player.y -= PLAYER_MOVE * sinf(game->player.dir);
         }
         else if (g_ts.y < 1 * SCREEN_HEIGHT / 3) {
             // Move backward
-            game->player.x += 0.13f * cosf(game->player.dir);
-            game->player.y += 0.13f * sinf(game->player.dir);
+            game->player.x += PLAYER_MOVE * cosf(game->player.dir);
+            game->player.y += PLAYER_MOVE * sinf(game->player.dir);
         }
 
         gameCollision(game);
@@ -198,11 +202,11 @@ gameDrawWallSlice(Game *game, int x, int height, int type, float tx)
 {
     uint16_t *tex = g_tex[type];
 
-    // Top background
+    // Ceiling
     g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
         0, (SCREEN_HEIGHT - height) / 2,
-        0x0000
+        CEILING_COLOR
     );
 
     // Wall
@@ -223,11 +227,11 @@ gameDrawWallSlice(Game *game, int x, int height, int type, float tx)
         );
     }
 
-    // Bottom background
+    // Floor
     g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
         (SCREEN_HEIGHT + height) / 2, SCREEN_HEIGHT,
-        0x0000
+        FLOOR_COLOR
     );
 }
 

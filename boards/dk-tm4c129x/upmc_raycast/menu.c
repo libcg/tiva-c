@@ -1,3 +1,4 @@
+#include "menu.h"
 #include "res/intro_snd.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,8 +15,10 @@
 static void OnMenuPlayPress(tWidget *psWidget);
 static void OnMenuOptionsPress(tWidget *psWidget);
 static void OnOptionsRetourPress(tWidget *psWidget);
+static void OnNextLevelBtnPress(tWidget *psWidget);
 static void OnMenuPaint(tWidget *psWidget, tContext *psContext);
 static void OnOptionsPaint(tWidget *psWidget, tContext *psContext);
+static void OnNextLevelPaint(tWidget *psWidget, tContext *psContext);
 extern tCanvasWidget g_panels[];
 
 Canvas(g_menu, g_panels, 0, 0, &g_sKentec320x240x16_SSD2119,
@@ -41,6 +44,15 @@ RectangularButton(g_sOptionsBack, g_panels, &g_sOptions, 0,
                   ClrMidnightBlue, ClrMidnightBlue, ClrGray, ClrSilver,
                   g_psFontCm22, "Retour", 0, 0, 0, 0, OnOptionsRetourPress);
 
+Canvas(g_nextLevel, g_panels + 2, 0, 0, &g_sKentec320x240x16_SSD2119,
+       0, 0, 320, 160,
+       CANVAS_STYLE_APP_DRAWN, 0, 0, 0, 0, 0, 0, OnNextLevelPaint);
+RectangularButton(g_nextLevelBtn, g_panels, &g_nextLevel, 0,
+                  &g_sKentec320x240x16_SSD2119, 320/2 - 100/2, 120, 100, 30,
+                  PB_STYLE_FILL | PB_STYLE_OUTLINE | PB_STYLE_TEXT,
+                  ClrMidnightBlue, ClrMidnightBlue, ClrGray, ClrSilver,
+                  g_psFontCm22, "Suivant", 0, 0, 0, 0, OnNextLevelBtnPress);
+
 //*****************************************************************************
 //
 // An array of canvas widgets, one per panel.  Each canvas is filled with
@@ -53,6 +65,9 @@ tCanvasWidget g_panels[] =
                  0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
     CanvasStruct(0, 0, &g_sOptionsBack, &g_sKentec320x240x16_SSD2119,
+                 0, 0, 320, 240,
+                 CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
+    CanvasStruct(0, 0, &g_nextLevelBtn, &g_sKentec320x240x16_SSD2119,
                  0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
 };
@@ -76,7 +91,7 @@ static void
 OnMenuOptionsPress(tWidget *psWidget)
 {
     WidgetRemove((tWidget *)(g_panels + g_ui32Panel));
-    g_ui32Panel = 1;
+    g_ui32Panel = MENU_OPTIONS;
     WidgetAdd(WIDGET_ROOT, (tWidget *)(g_panels + g_ui32Panel));
     WidgetPaint((tWidget *)(g_panels + g_ui32Panel));
 }
@@ -85,16 +100,17 @@ static void
 OnOptionsRetourPress(tWidget *psWidget)
 {
     WidgetRemove((tWidget *)(g_panels + g_ui32Panel));
-    g_ui32Panel = 0;
+    g_ui32Panel = MENU_HOME;
     WidgetAdd(WIDGET_ROOT, (tWidget *)(g_panels + g_ui32Panel));
     WidgetPaint((tWidget *)(g_panels + g_ui32Panel));
 }
 
-//*****************************************************************************
-//
-// Handles paint requests for the introduction canvas widget.
-//
-//*****************************************************************************
+static void
+OnNextLevelBtnPress(tWidget *psWidget)
+{
+    exit = 1;
+}
+
 static void
 OnMenuPaint(tWidget *psWidget, tContext *psContext)
 {
@@ -104,19 +120,28 @@ OnMenuPaint(tWidget *psWidget, tContext *psContext)
                  90, 30, 0);
 }
 
-//*****************************************************************************
-//
-// Handles paint requests for the primitives canvas widget.
-//
-//*****************************************************************************
 static void
 OnOptionsPaint(tWidget *psWidget, tContext *psContext)
 {
 }
 
+static void
+OnNextLevelPaint(tWidget *psWidget, tContext *psContext)
+{
+    GrContextFontSet(psContext, g_psFontCm20);
+    GrContextForegroundSet(psContext, ClrSilver);
+    GrStringDraw(psContext, "Gagne !", -1,
+                 320/2 - 35, 30, 0);
+}
+
 void menuInit()
 {
     audio_play(&intro_snd, false);
+}
+
+void menuSetState(int state)
+{
+    g_ui32Panel = state;
 }
 
 void menuRun()

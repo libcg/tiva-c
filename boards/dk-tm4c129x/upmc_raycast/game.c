@@ -2,32 +2,80 @@
 #include "disp.h"
 #include "ctrl.h"
 #include "audio.h"
+#include "menu.h"
 #include "res/hit_snd.h"
 #include "res/goal_snd.h"
 #include <math.h>
 
 // Globals
 
+static Map map[] =
+{
+    { // map0
+        .tile =
+        {
+            {1, 0, 0, 0, 0, 1, 0, 0, 1, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 2},
+            {0, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 1},
+            {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
+            {0, 0, 0, 1, 1, 0, 3, 0, 0, 1},
+            {4, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+            {4, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 4, 4, 4, 4, 0, 0, 0, 1, 0}
+        },
+        .w = 10,
+        .h = 10,
+        .startX = 2.f,
+        .startY = 3.f,
+        .startDir = 70.f * M_PI / 180.f
+    },
+    { // map1
+        .tile =
+        {
+            {0, 1, 0, 1, 0, 3, 0, 0, 0, 0},
+            {0, 1, 0, 0, 0, 3, 0, 0, 0, 0},
+            {0, 0, 0, 1, 0, 3, 0, 0, 0, 0},
+            {1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+            {4, 2, 4, 1, 3, 0, 3, 3, 3, 0},
+            {4, 0, 0, 1, 3, 3, 3, 0, 0, 0},
+            {4, 0, 0, 1, 3, 0, 0, 0, 3, 3},
+            {4, 0, 0, 0, 0, 0, 4, 0, 0, 3},
+            {4, 0, 0, 0, 0, 0, 4, 0, 0, 0},
+            {4, 4, 4, 4, 4, 4, 4, 0, 1, 0}
+        },
+        .w = 10,
+        .h = 10,
+        .startX = 0.5f,
+        .startY = 0.5f,
+        .startDir = 90.f * M_PI / 180.f
+    },
+    { // map2
+        .tile =
+        {
+            {4, 4, 4, 4, 4, 4, 4, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 3, 0},
+            {3, 0, 0, 0, 4, 4, 4, 0, 0, 0},
+            {3, 0, 0, 4, 0, 0, 0, 1, 1, 0},
+            {3, 0, 4, 2, 0, 0, 0, 0, 0, 0},
+            {3, 0, 4, 2, 0, 0, 0, 0, 0, 0},
+            {3, 0, 0, 4, 0, 0, 0, 1, 1, 0},
+            {3, 0, 0, 0, 4, 4, 4, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 3, 0},
+            {4, 4, 4, 4, 4, 4, 4, 0, 0, 0}
+        },
+        .w = 10,
+        .h = 10,
+        .startX = 4.5f,
+        .startY = 5.f,
+        .startDir = 0.f * M_PI / 180.f
+    },
+};
+
 static Game game =
 {
-    .player.x = 2.f,
-    .player.y = 3.f,
-    .player.dir = 70.f * M_PI / 180.f,
-    .map.tile =
-    {
-        {1, 0, 0, 0, 0, 1, 0, 0, 1, 1},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 2},
-        {0, 0, 0, 0, 1, 0, 0, 0, 1, 1},
-        {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
-        {0, 0, 0, 1, 3, 0, 3, 0, 0, 1},
-        {0, 0, 0, 1, 3, 0, 3, 0, 0, 0},
-        {0, 0, 0, 1, 1, 0, 3, 0, 0, 1},
-        {4, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {4, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-        {0, 4, 4, 4, 4, 0, 0, 0, 1, 0}
-    },
-    .map.w = sizeof(game.map.tile[0]) / sizeof(game.map.tile[0][0]),
-    .map.h = sizeof(game.map.tile) / sizeof(game.map.tile[0])
+    .map = &map[0]
 };
 
 static bool g_exit;
@@ -38,6 +86,7 @@ static void gameOnBlockHit(int type)
 {
     if (type == 2) { // door
         audio_play(&goal_snd, false);
+        menuSetState(MENU_NEXTLEVEL);
         g_exit = true;
     }
     else {
@@ -106,22 +155,31 @@ static void gameLogic()
     gameCollision(opx, opy);
 }
 
+static void gameInitMap()
+{
+    game.player.x = game.map->startX;
+    game.player.y = game.map->startY;
+    game.player.dir = game.map->startDir;
+}
+
 // Exported functions
 
 int gameLocate(int x, int y)
 {
-    if ((x < 0 || x >= game.map.w) ||
-        (y < 0 || y >= game.map.h))
+    if ((x < 0 || x >= game.map->w) ||
+        (y < 0 || y >= game.map->h))
     {
         // Outside the map bounds
         return 1;
     }
 
-    return game.map.tile[y][x];
+    return game.map->tile[y][x];
 }
 
 void gameRun()
 {
+    gameInitMap();
+
     g_exit = false;
 
     // Game loop
@@ -131,4 +189,7 @@ void gameRun()
         gameLogic();
         dispRender(&game);
     }
+
+    // Go to next map
+    game.map++;
 }

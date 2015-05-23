@@ -23,12 +23,15 @@ typedef struct
     uint8_t tile[10][10];
     uint8_t w;
     uint8_t h;
+    float startX;
+    float startY;
+    float startDir;
 } Map;
 
 typedef struct
 {
     Player player;
-    Map map;
+    Map *map;
 } Game;
 
 int gameLocate(int x, int y);

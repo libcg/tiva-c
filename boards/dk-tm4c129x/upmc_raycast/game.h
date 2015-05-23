@@ -32,6 +32,6 @@ typedef struct
 } Game;
 
 int gameLocate(int x, int y);
-int gameRun();
+void gameRun();
 
 #endif // __GAME_H

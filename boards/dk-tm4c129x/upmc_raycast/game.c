@@ -30,14 +30,19 @@ static Game game =
     .map.h = sizeof(game.map.tile) / sizeof(game.map.tile[0])
 };
 
+static bool g_exit;
+
 // Local functions
 
 static void gameOnBlockHit(int type)
 {
-    if (type == 2) // door
+    if (type == 2) { // door
         audio_play(&goal_snd, false);
-    else
+        g_exit = true;
+    }
+    else {
         audio_play(&hit_snd, false);
+    }
 }
 
 static void gameCollision(float opx, float opy)
@@ -115,15 +120,15 @@ int gameLocate(int x, int y)
     return game.map.tile[y][x];
 }
 
-int gameRun()
+void gameRun()
 {
+    g_exit = false;
+
     // Game loop
-    while (1)
+    while (!g_exit)
     {
         audio_process();
         gameLogic();
         dispRender(&game);
     }
-
-    return 0;
 }

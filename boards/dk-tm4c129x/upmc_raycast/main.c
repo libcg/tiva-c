@@ -13,6 +13,10 @@
 #include "drivers/touch.h"
 #include "drivers/orbitled.h"
 
+// Globals
+
+static bool g_inGame;
+
 // Local functions
 
 static long touchscreenCallback(unsigned long msg, long x, long y)
@@ -20,8 +24,10 @@ static long touchscreenCallback(unsigned long msg, long x, long y)
     bool touch = (msg == WIDGET_MSG_PTR_MOVE || msg == WIDGET_MSG_PTR_DOWN);
 
     // Dispatch the message to widget and game components
-    WidgetPointerMessage(msg, x, y);
-    ctrlTouchEvent(touch, x, y);
+    if (g_inGame)
+        ctrlTouchEvent(touch, x, y);
+    else
+        WidgetPointerMessage(msg, x, y);
 
     return 0;
 }
@@ -65,7 +71,14 @@ int main()
     orbitled_init();
 
     menuInit();
-    menuRun();
 
-    return gameRun();
+    while (1) {
+        g_inGame = false;
+        menuRun();
+
+        g_inGame = true;
+        gameRun();
+    }
+
+    return 0;
 }

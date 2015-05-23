@@ -50,10 +50,10 @@ RectangularButton(g_sOptionsBack, g_panels, &g_sOptions, 0,
 tCanvasWidget g_panels[] =
 {
     CanvasStruct(0, 0, &g_menuPlay, &g_sKentec320x240x16_SSD2119,
-                 0, 0, 320, 160,
+                 0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
     CanvasStruct(0, 0, &g_sOptionsBack, &g_sKentec320x240x16_SSD2119,
-                 0, 0, 320, 160,
+                 0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
 };
 #define NUM_PANELS (sizeof(g_panels) / sizeof(g_panels[0]))
@@ -63,7 +63,7 @@ tCanvasWidget g_panels[] =
 // The panel that is currently being displayed.
 //
 //*****************************************************************************
-static uint32_t g_ui32Panel;
+static uint32_t g_ui32Panel = 0;
 static bool exit;
 
 static void
@@ -114,29 +114,22 @@ OnOptionsPaint(tWidget *psWidget, tContext *psContext)
 {
 }
 
-void
-menuInit()
+void menuInit()
 {
-    //
-    // Add the first panel to the widget tree.
-    //
-    g_ui32Panel = 0;
-    WidgetAdd(WIDGET_ROOT, (tWidget *)g_panels);
-
-    //
-    // Issue the initial paint request to the widgets.
-    //
-    WidgetPaint(WIDGET_ROOT);
+    audio_play(&intro_snd, false);
 }
 
-void
-menuRun()
+void menuRun()
 {
-    exit = 0;
-    audio_play(&intro_snd, false);
+    WidgetAdd(WIDGET_ROOT, (tWidget *)(g_panels + g_ui32Panel));
+    WidgetPaint((tWidget *)(g_panels + g_ui32Panel));
+
+    exit = false;
 
     while (!exit) {
         WidgetMessageQueueProcess();
         audio_process();
     }
+
+    WidgetRemove((tWidget *)(g_panels + g_ui32Panel));
 }

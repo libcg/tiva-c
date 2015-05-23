@@ -14,6 +14,7 @@
 #include "drivers/orbitled.h"
 #include "menu.h"
 #include "audio.h"
+#include "goal_snd.h"
 #include "hit_snd.h"
 #include "rock_tex.h"
 #include "door_tex.h"
@@ -97,21 +98,42 @@ gameCollision(Game *game, float opx, float opy)
     int fpx = floorf(px);
     int fpy = floorf(py);
     bool colliding = false;
+    int type;
+    int collide_type = 0;
 
-    if      (gameLocate(game, floorf(px + COLLIDE_GAP), fpy))
-        colliding = true, game->player.x = fpx - COLLIDE_GAP + 1;
-    else if (gameLocate(game, floorf(px - COLLIDE_GAP), fpy))
-        colliding = true, game->player.x = fpx + COLLIDE_GAP;
-    if      (gameLocate(game, fpx, floorf(py + COLLIDE_GAP)))
-        colliding = true, game->player.y = fpy - COLLIDE_GAP + 1;
-    else if (gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))
-        colliding = true, game->player.y = fpy + COLLIDE_GAP;
+	// Check for x axis collisions
+    if      ((type = gameLocate(game, floorf(px + COLLIDE_GAP), fpy))) {
+        colliding = true, collide_type = type;
+        game->player.x = fpx - COLLIDE_GAP + 1;
+    }
+    else if ((type = gameLocate(game, floorf(px - COLLIDE_GAP), fpy))) {
+        colliding = true, collide_type = type;
+        game->player.x = fpx + COLLIDE_GAP;
+    }
 
-    if      (gameLocate(game, floorf(game->player.x), floorf(game->player.y)))
-        colliding = true, game->player.x = opx, game->player.y = opy;
+	// Check for y axis collisions
+    if      ((type = gameLocate(game, fpx, floorf(py + COLLIDE_GAP)))) {
+        colliding = true, collide_type = type;
+        game->player.y = fpy - COLLIDE_GAP + 1;
+    }
+    else if ((type = gameLocate(game, fpx, floorf(py - COLLIDE_GAP)))) {
+        colliding = true, collide_type = type;
+        game->player.y = fpy + COLLIDE_GAP;
+    }
 
-    if (colliding && !collided)
-        audio_play(&hit_snd, false);
+	// Check if we're inside a wall
+    if ((type = gameLocate(game, fpx, fpy))) {
+        colliding = true, collide_type = type;
+        game->player.x = opx, game->player.y = opy;
+    }
+
+	// Play a sound that matches the collided block type
+    if (colliding && !collided) {
+        if (collide_type == 2) // door
+            audio_play(&goal_snd, false);
+        else
+            audio_play(&hit_snd, false);
+    }
 
     collided = colliding;
 }

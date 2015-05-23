@@ -75,7 +75,7 @@ static Map map[] =
 
 static Game game =
 {
-    .map = &map[0]
+    .mapId = 0
 };
 
 static bool g_exit;
@@ -157,6 +157,7 @@ static void gameLogic()
 
 static void gameInitMap()
 {
+    game.map = &map[game.mapId];
     game.player.x = game.map->startX;
     game.player.y = game.map->startY;
     game.player.dir = game.map->startDir;
@@ -191,5 +192,9 @@ void gameRun()
     }
 
     // Go to next map
-    game.map++;
+    game.mapId++;
+    if (game.mapId >= sizeof(map) / sizeof(Map)) {
+        game.mapId = 0;
+        menuSetState(MENU_END);
+    }
 }

@@ -32,6 +32,7 @@ typedef struct
 {
     Player player;
     Map *map;
+    int mapId;
 } Game;
 
 int gameLocate(int x, int y);

@@ -5,7 +5,8 @@ typedef enum
 {
 	MENU_HOME = 0,
 	MENU_OPTIONS,
-	MENU_NEXTLEVEL
+	MENU_NEXTLEVEL,
+	MENU_END
 } MenuState;
 
 void menuInit();

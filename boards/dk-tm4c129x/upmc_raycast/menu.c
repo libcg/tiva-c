@@ -16,9 +16,11 @@ static void OnMenuPlayPress(tWidget *psWidget);
 static void OnMenuOptionsPress(tWidget *psWidget);
 static void OnOptionsRetourPress(tWidget *psWidget);
 static void OnNextLevelBtnPress(tWidget *psWidget);
+static void OnEndBtnPress(tWidget *psWidget);
 static void OnMenuPaint(tWidget *psWidget, tContext *psContext);
 static void OnOptionsPaint(tWidget *psWidget, tContext *psContext);
 static void OnNextLevelPaint(tWidget *psWidget, tContext *psContext);
+static void OnEndPaint(tWidget *psWidget, tContext *psContext);
 extern tCanvasWidget g_panels[];
 
 Canvas(g_menu, g_panels, 0, 0, &g_sKentec320x240x16_SSD2119,
@@ -53,6 +55,15 @@ RectangularButton(g_nextLevelBtn, g_panels, &g_nextLevel, 0,
                   ClrMidnightBlue, ClrMidnightBlue, ClrGray, ClrSilver,
                   g_psFontCm22, "Suivant", 0, 0, 0, 0, OnNextLevelBtnPress);
 
+Canvas(g_end, g_panels + 3, 0, 0, &g_sKentec320x240x16_SSD2119,
+       0, 0, 320, 160,
+       CANVAS_STYLE_APP_DRAWN, 0, 0, 0, 0, 0, 0, OnEndPaint);
+RectangularButton(g_endBtn, g_panels, &g_end, 0,
+                  &g_sKentec320x240x16_SSD2119, 320/2 - 100/2, 120, 100, 30,
+                  PB_STYLE_FILL | PB_STYLE_OUTLINE | PB_STYLE_TEXT,
+                  ClrMidnightBlue, ClrMidnightBlue, ClrGray, ClrSilver,
+                  g_psFontCm22, "Retour", 0, 0, 0, 0, OnEndBtnPress);
+
 //*****************************************************************************
 //
 // An array of canvas widgets, one per panel.  Each canvas is filled with
@@ -68,6 +79,9 @@ tCanvasWidget g_panels[] =
                  0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
     CanvasStruct(0, 0, &g_nextLevelBtn, &g_sKentec320x240x16_SSD2119,
+                 0, 0, 320, 240,
+                 CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
+    CanvasStruct(0, 0, &g_endBtn, &g_sKentec320x240x16_SSD2119,
                  0, 0, 320, 240,
                  CANVAS_STYLE_FILL, ClrBlack, 0, 0, 0, 0, 0, 0),
 };
@@ -112,6 +126,12 @@ OnNextLevelBtnPress(tWidget *psWidget)
 }
 
 static void
+OnEndBtnPress(tWidget *psWidget)
+{
+    OnOptionsRetourPress(psWidget);
+}
+
+static void
 OnMenuPaint(tWidget *psWidget, tContext *psContext)
 {
     GrContextFontSet(psContext, g_psFontCm20);
@@ -132,6 +152,15 @@ OnNextLevelPaint(tWidget *psWidget, tContext *psContext)
     GrContextForegroundSet(psContext, ClrSilver);
     GrStringDraw(psContext, "Gagne !", -1,
                  320/2 - 35, 30, 0);
+}
+
+static void
+OnEndPaint(tWidget *psWidget, tContext *psContext)
+{
+    GrContextFontSet(psContext, g_psFontCm20);
+    GrContextForegroundSet(psContext, ClrSilver);
+    GrStringDraw(psContext, "Jeu termine !", -1,
+                 320/2 - 50, 30, 0);
 }
 
 void menuInit()

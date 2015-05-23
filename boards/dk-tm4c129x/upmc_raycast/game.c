@@ -32,53 +32,64 @@ static Game game =
 
 // Local functions
 
+static void gameOnBlockHit(int type)
+{
+    if (type == 2) // door
+        audio_play(&goal_snd, false);
+    else
+        audio_play(&hit_snd, false);
+}
+
 static void gameCollision(float opx, float opy)
 {
-    static bool collided = false;
+    static bool collided_x = false;
+    static bool collided_y = false;
 
     float px = game.player.x;
     float py = game.player.y;
     int fpx = floorf(px);
     int fpy = floorf(py);
-    bool colliding = false;
+    bool colliding_x = false;
+    bool colliding_y = false;
+    int collide_type_x = 0;
+    int collide_type_y = 0;
     int type;
-    int collide_type = 0;
 
     // Check for x axis collisions
     if      ((type = gameLocate(floorf(px + COLLIDE_GAP), fpy))) {
-        colliding = true, collide_type = type;
+        colliding_x = true, collide_type_x = type;
         game.player.x = fpx - COLLIDE_GAP + 1;
     }
     else if ((type = gameLocate(floorf(px - COLLIDE_GAP), fpy))) {
-        colliding = true, collide_type = type;
+        colliding_x = true, collide_type_x = type;
         game.player.x = fpx + COLLIDE_GAP;
     }
 
     // Check for y axis collisions
     if      ((type = gameLocate(fpx, floorf(py + COLLIDE_GAP)))) {
-        colliding = true, collide_type = type;
+        colliding_y = true, collide_type_y = type;
         game.player.y = fpy - COLLIDE_GAP + 1;
     }
     else if ((type = gameLocate(fpx, floorf(py - COLLIDE_GAP)))) {
-        colliding = true, collide_type = type;
+        colliding_y = true, collide_type_y = type;
         game.player.y = fpy + COLLIDE_GAP;
     }
 
     // Check if we're inside a wall
     if ((type = gameLocate(fpx, fpy))) {
-        colliding = true, collide_type = type;
+        colliding_x = true, collide_type_x = type;
+        colliding_y = true, collide_type_y = type;
         game.player.x = opx, game.player.y = opy;
     }
 
-    // Play a sound that matches the collided block type
-    if (colliding && !collided) {
-        if (collide_type == 2) // door
-            audio_play(&goal_snd, false);
-        else
-            audio_play(&hit_snd, false);
-    }
+    // Take action when the player hits a block
+    if (colliding_x && !collided_x)
+        gameOnBlockHit(collide_type_x);
+    if (colliding_y && !collided_y)
+        gameOnBlockHit(collide_type_y);
 
-    collided = colliding;
+    collided_x = colliding_x;
+    collided_y = colliding_y;
 }
 
 static void gameLogic()

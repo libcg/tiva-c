@@ -9,11 +9,17 @@
 #include "res/handle_tex.h"
 #include "res/wood_tex.h"
 
+#define FIELD_OF_VIEW   (70.f * M_PI / 180.f)   // Camera field of view
+#define TEX_SIZE        (32)                    // Texture size in pixels
+#define CEILING_COLOR   (0x7BEF)                // lite gray, 5-6-5 RGB format
+#define FLOOR_COLOR     (0x2965)                // dark gray, 5-6-5 RGB format
+
 // Globals
 
+// Textures are indexed by block number
 static uint16_t *g_tex[] =
 {
-    NULL,
+    NULL, // 0
     (uint16_t*)&rock_tex_data,
     (uint16_t*)&door_tex_data,
     (uint16_t*)&handle_tex_data,
@@ -64,8 +70,9 @@ static float dispRaycast(Game *game, int *type, float *tx, float angle)
     float x = game->player.x;
     float y = game->player.y;
 
-    if ((gameLocate(floorf(x), floorf(y))) != 0)
-    {
+    // Camera is inside a block.
+    // Return a minimal distance to avoid a division by zero.
+    if ((gameLocate(floorf(x), floorf(y))) != 0) {
         *type = 0;
         *tx = 0.f;
         return 0.0001f;
@@ -83,10 +90,10 @@ static float dispRaycast(Game *game, int *type, float *tx, float angle)
     float incfy = incix * vtan;
 
     // Calculate start position
-    int ix = x + (incix > 0);
-    int iy = y + (inciy > 0);
-    float fx = x + incfx * fabs(floor(y) + (inciy > 0) - y);
-    float fy = y + incfy * fabs(floor(x) + (incix > 0) - x);
+    int ix = floorf(x) + (incix > 0);
+    int iy = floorf(y) + (inciy > 0);
+    float fx = x + incfx * fabs(floorf(y) + (inciy > 0) - y);
+    float fy = y + incfy * fabs(floorf(x) + (incix > 0) - x);
 
     // Find the first colliding tile in each direction
     while (incix && gameLocate(ix - (incix < 0), fy) == 0)
@@ -106,18 +113,26 @@ static float dispRaycast(Game *game, int *type, float *tx, float angle)
 
     if (dx < dy)
     {
+        // Get block type
         *type = gameLocate(ix - (incix < 0), floorf(fy));
+
+        // Get wall texture coordinate [0;1]
         *tx = fy - floorf(fy);
         if (incix < 0)
             *tx = 1 - *tx;
+
         return dx;
     }
     else
     {
+        // Get block type
         *type = gameLocate(floorf(fx), iy - (inciy < 0));
+
+        // Get wall texture coordinate [0;1]
         *tx = fx - floorf(fx);
         if (inciy > 0)
             *tx = 1 - *tx;
+
         return dy;
     }
 }
@@ -135,10 +150,15 @@ void dispRender(Game *game)
         int type;
         float tx;
 
+        // Cast a ray to get wall distance
         dist = dispRaycast(game, &type, &tx, angle);
-        dist *= cosf(game->player.dir - angle);
-        angle += FIELD_OF_VIEW / SCREEN_WIDTH;
 
+        // Perspective correction
+        dist *= cosf(game->player.dir - angle);
+
+        // Draw ceiling, wall and floor
         dispDrawColumn(game, i, SCREEN_HEIGHT / dist, type, tx);
+
+        angle += FIELD_OF_VIEW / SCREEN_WIDTH;
     }
 }

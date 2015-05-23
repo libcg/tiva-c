@@ -19,6 +19,7 @@ static long touchscreenCallback(unsigned long msg, long x, long y)
 {
     bool touch = (msg == WIDGET_MSG_PTR_MOVE || msg == WIDGET_MSG_PTR_DOWN);
 
+    // Dispatch the message to widget and game components
     WidgetPointerMessage(msg, x, y);
     ctrlTouchEvent(touch, x, y);
 

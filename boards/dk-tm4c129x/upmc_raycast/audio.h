@@ -2,6 +2,7 @@
 #define __AUDIO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define AUDIO_SAMPLE_RATE   (16000)
 #define AUDIO_BUFFER_SIZE   (4096)

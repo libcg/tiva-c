@@ -1,7 +1,7 @@
 #ifndef __HIT_SND
 #define __HIT_SND
 
-#include "audio.h"
+#include "../audio.h"
 
 // Use const to put the data in flash instead of SRAM.
 const uint8_t hit_data[] = 

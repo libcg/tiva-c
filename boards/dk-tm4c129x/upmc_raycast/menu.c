@@ -1,3 +1,4 @@
+#include "res/intro_snd.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include "inc/hw_types.h"
@@ -9,7 +10,6 @@
 #include "grlib/slider.h"
 #include "utils/ustdlib.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
-#include "intro_snd.h"
 
 static void OnMenuPlayPress(tWidget *psWidget);
 static void OnMenuOptionsPress(tWidget *psWidget);

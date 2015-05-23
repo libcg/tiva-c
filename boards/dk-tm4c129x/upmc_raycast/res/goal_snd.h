@@ -1,7 +1,7 @@
 #ifndef __GOAL_SND
 #define __GOAL_SND
 
-#include "audio.h"
+#include "../audio.h"
 
 // Use const to put the data in flash instead of SRAM.
 const uint8_t goal_data[] = 

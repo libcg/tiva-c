@@ -1,7 +1,7 @@
 #ifndef __INTRO_SND
 #define __INTRO_SND
 
-#include "audio.h"
+#include "../audio.h"
 
 // Use const to put the data in flash instead of SRAM.
 const uint8_t intro_data[] = 

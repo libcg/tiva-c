@@ -71,7 +71,10 @@ ${COMPILER}:
 # Rules for building the upmc_raycast example.
 #
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/frame.o
-${COMPILER}/upmc_raycast.axf: ${COMPILER}/upmc_raycast.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/main.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/ctrl.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/disp.o
+${COMPILER}/upmc_raycast.axf: ${COMPILER}/game.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/menu.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/audio.o
 ${COMPILER}/upmc_raycast.axf: ${COMPILER}/kentec320x240x16_ssd2119.o

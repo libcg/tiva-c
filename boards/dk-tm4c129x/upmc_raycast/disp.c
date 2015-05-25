@@ -1,13 +1,17 @@
 #include "disp.h"
 #include "game.h"
+#include "config.h"
 #include <stdlib.h>
 #include <math.h>
 #include "grlib/grlib.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
+
+#ifdef USE_TEXTURES
 #include "res/rock_tex.h"
 #include "res/door_tex.h"
 #include "res/handle_tex.h"
 #include "res/wood_tex.h"
+#endif
 
 #define FIELD_OF_VIEW   (70.f * M_PI / 180.f)   // Camera field of view
 #define TEX_SIZE        (32)                    // Texture size in pixels
@@ -16,7 +20,8 @@
 
 // Globals
 
-// Textures are indexed by block number
+#ifdef USE_TEXTURES
+// Textures indexed by block number
 static uint16_t *g_tex[] =
 {
     NULL, // 0
@@ -25,21 +30,35 @@ static uint16_t *g_tex[] =
     (uint16_t*)&handle_tex_data,
     (uint16_t*)&wood_tex_data
 };
+#endif
+
+// Colors indexed by block number
+static uint16_t g_color[] =
+{
+    0x0000, // black
+    0xFFFF, // white
+    0x07E0, // green
+    0x7FFF, // cyan
+    0xFFE0  // yellow
+};
 
 // Local functions
 
 static void dispDrawColumn(Game *game, int x, int height, int type, float tx)
 {
-    uint16_t *tex = g_tex[type];
+    int limHeight = (height > SCREEN_HEIGHT ? SCREEN_HEIGHT : height);
 
     // Ceiling
     g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
-        0, (SCREEN_HEIGHT - height) / 2,
+        0, (SCREEN_HEIGHT - limHeight) / 2,
         CEILING_COLOR
     );
 
     // Wall
+#ifdef USE_TEXTURES
+    uint16_t *tex = g_tex[type];
+
     if (tex) {
         // Draw a texture slice
         Kentec320x240x16_SSD2119TexDrawV(
@@ -49,18 +68,21 @@ static void dispDrawColumn(Game *game, int x, int height, int type, float tx)
         );
     }
     else {
-        // Draw a solid white slice
+#endif
+        // Draw a solid color slice
         g_sKentec320x240x16_SSD2119.pfnLineDrawV(
             NULL, x,
-            (SCREEN_HEIGHT - height) / 2, (SCREEN_HEIGHT + height) / 2,
-            0xFFFF
+            (SCREEN_HEIGHT - limHeight) / 2, (SCREEN_HEIGHT + limHeight) / 2,
+            g_color[type]
         );
+#ifdef USE_TEXTURES
     }
+#endif
 
     // Floor
     g_sKentec320x240x16_SSD2119.pfnLineDrawV(
         NULL, x,
-        (SCREEN_HEIGHT + height) / 2, SCREEN_HEIGHT,
+        (SCREEN_HEIGHT + limHeight) / 2, SCREEN_HEIGHT,
         FLOOR_COLOR
     );
 }

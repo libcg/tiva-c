@@ -3,9 +3,13 @@
 #include "ctrl.h"
 #include "audio.h"
 #include "menu.h"
+#include "config.h"
+#include <math.h>
+
+#ifdef USE_SOUND
 #include "res/hit_snd.h"
 #include "res/goal_snd.h"
-#include <math.h>
+#endif
 
 // Globals
 
@@ -85,12 +89,16 @@ static bool g_exit;
 static void gameOnBlockHit(int type)
 {
     if (type == 2) { // door
+#ifdef USE_SOUND
         audio_play(&goal_snd, false);
+#endif
         menuSetState(MENU_NEXTLEVEL);
         g_exit = true;
     }
     else {
+#ifdef USE_SOUND
         audio_play(&hit_snd, false);
+#endif
     }
 }
 

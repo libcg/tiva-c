@@ -1,5 +1,6 @@
 #include "menu.h"
-#include "res/intro_snd.h"
+#include "config.h"
+#include "audio.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include "inc/hw_types.h"
@@ -11,6 +12,10 @@
 #include "grlib/slider.h"
 #include "utils/ustdlib.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
+
+#ifdef USE_SOUND
+#include "res/intro_snd.h"
+#endif
 
 static void OnMenuPlayPress(tWidget *psWidget);
 static void OnMenuOptionsPress(tWidget *psWidget);
@@ -165,7 +170,9 @@ OnEndPaint(tWidget *psWidget, tContext *psContext)
 
 void menuInit()
 {
+#ifdef USE_SOUND
     audio_play(&intro_snd, false);
+#endif
 }
 
 void menuSetState(int state)

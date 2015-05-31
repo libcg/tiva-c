@@ -10,6 +10,7 @@
 #ifdef USE_SOUND
 #include "res/hit_snd.h"
 #include "res/goal_snd.h"
+#include "res/timesup_snd.h"
 #endif
 
 // Globals
@@ -204,6 +205,9 @@ void gameRun()
         // Time's up!
         game.mapId = 0;
         menuSetState(MENU_TIMESUP);
+#ifdef USE_SOUND
+        audio_play(&timesup_snd, false);
+#endif
     }
     else {
         // Go to next map

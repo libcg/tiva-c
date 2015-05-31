@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "config.h"
 #include <math.h>
+#include "drivers/orbitled.h"
 
 #ifdef USE_SOUND
 #include "res/hit_snd.h"
@@ -169,6 +170,7 @@ static void gameInitMap()
     game.player.x = game.map->startX;
     game.player.y = game.map->startY;
     game.player.dir = game.map->startDir;
+    game.timeLeft = TIME_TOTAL;
 }
 
 // Exported functions
@@ -176,8 +178,7 @@ static void gameInitMap()
 int gameLocate(int x, int y)
 {
     if ((x < 0 || x >= game.map->w) ||
-        (y < 0 || y >= game.map->h))
-    {
+        (y < 0 || y >= game.map->h)) {
         // Outside the map bounds
         return 1;
     }
@@ -188,21 +189,45 @@ int gameLocate(int x, int y)
 void gameRun()
 {
     gameInitMap();
+    orbitled_set(ORBIT_LED_ALL);
 
     g_exit = false;
 
     // Game loop
-    while (!g_exit)
-    {
+    while (!g_exit) {
         audio_process();
         gameLogic();
         dispRender(&game);
     }
 
-    // Go to next map
-    game.mapId++;
-    if (game.mapId >= sizeof(map) / sizeof(Map)) {
+    if (game.timeLeft == 0) {
+        // Time's up!
         game.mapId = 0;
-        menuSetState(MENU_END);
+        menuSetState(MENU_TIMESUP);
+    }
+    else {
+        // Go to next map
+        game.mapId++;
+
+        if (game.mapId >= sizeof(map) / sizeof(Map)) {
+            game.mapId = 0;
+            menuSetState(MENU_END);
+        }
+    }
+
+    orbitled_set(ORBIT_LED_NONE);
+}
+
+void gameTick()
+{
+    game.timeLeft--;
+
+    if (game.timeLeft == 0) {
+        g_exit = true;
+    }
+    else {
+        int dot = (TIME_TOTAL - game.timeLeft) * 4 / TIME_TOTAL;
+
+        orbitled_set(((ORBIT_LED_ALL >> dot) ^ (game.timeLeft & 1)) << dot);
     }
 }

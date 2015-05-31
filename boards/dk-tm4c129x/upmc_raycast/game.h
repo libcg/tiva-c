@@ -10,6 +10,7 @@
 #define COLLIDE_GAP     (0.2f)
 #define PLAYER_MOVE     (0.13f)
 #define PLAYER_ROT      (0.1f)
+#define TIME_TOTAL      (30)
 
 typedef struct
 {
@@ -33,9 +34,11 @@ typedef struct
     Player player;
     Map *map;
     int mapId;
+    int timeLeft;
 } Game;
 
 int gameLocate(int x, int y);
 void gameRun();
+void gameTick();
 
 #endif // __GAME_H

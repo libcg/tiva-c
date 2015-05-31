@@ -1,10 +1,12 @@
 #ifndef __ORBITLED_H
 #define __ORBITLED_H
 
-#define ORBIT_LED1  (1)
-#define ORBIT_LED2  (2)
-#define ORBIT_LED3  (4)
-#define ORBIT_LED4  (8)
+#define ORBIT_LED_NONE  (0)
+#define ORBIT_LED1      (1)
+#define ORBIT_LED2      (2)
+#define ORBIT_LED3      (4)
+#define ORBIT_LED4      (8)
+#define ORBIT_LED_ALL   (15)
 
 void orbitled_init();
 void orbitled_on(int leds);

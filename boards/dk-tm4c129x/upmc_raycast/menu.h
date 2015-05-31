@@ -6,7 +6,8 @@ typedef enum
 	MENU_HOME = 0,
 	MENU_OPTIONS,
 	MENU_NEXTLEVEL,
-	MENU_END
+	MENU_END,
+	MENU_TIMESUP
 } MenuState;
 
 void menuInit();

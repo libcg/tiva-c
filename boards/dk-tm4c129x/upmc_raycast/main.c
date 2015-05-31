@@ -2,10 +2,13 @@
 #include "menu.h"
 #include "ctrl.h"
 #include "audio.h"
+#include "inc/hw_ints.h"
+#include "inc/hw_memmap.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/udma.h"
+#include "driverlib/timer.h"
 #include "grlib/grlib.h"
 #include "grlib/widget.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
@@ -18,6 +21,14 @@
 static bool g_inGame;
 
 // Local functions
+
+void TickIntHandler()
+{
+    ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+    if (g_inGame)
+        gameTick();
+}
 
 static long touchscreenCallback(unsigned long msg, long x, long y)
 {
@@ -69,6 +80,14 @@ int main()
 
     // Initialize LEDs
     orbitled_init();
+
+    // Initialize timer
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+    ROM_TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
+    ROM_TimerLoadSet(TIMER0_BASE, TIMER_A, ui32SysClock);
+    ROM_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    ROM_IntEnable(INT_TIMER0A);
+    ROM_TimerEnable(TIMER0_BASE, TIMER_A);
 
     menuInit();
 

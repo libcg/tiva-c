@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	fprintf(ofil,
 		"#ifndef __%s_SND\n"
 		"#define __%s_SND\n\n"
-		"#include \"audio.h\"\n\n"
+		"#include \"../audio.h\"\n\n"
 		"// Use const to put the data in flash instead of SRAM.\n"
 		"const uint8_t %s_data[] = \n{\n\t",
 		uc_name, uc_name, argv[1]);
